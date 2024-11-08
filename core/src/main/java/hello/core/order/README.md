@@ -183,3 +183,70 @@ class OrderServiceTest {
     }
 }
 ```
+
+#### 예제 코드 - RateDiscountPolicy
+
+```java
+import hello.core.discount.DiscountPolicy;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+
+public class RateDiscountPolicy implements DiscountPolicy {
+
+    private int discountPercent = 10; // 10% 할인
+
+    @Override
+    public int discount(Member member, int price) {
+
+        if (member.getGrade() == Grade.VIP) {
+            return price * discountPercent / 100;
+        } else {
+            return 0;
+        }
+    }
+}
+```
+
+#### 에제 코드 - 테스트 작성
+
+```java
+import hello.core.discount.RateDiscountPolicy;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class RateDiscountPolicyTest {
+
+    RateDiscountPolicy discountPolicy = new RateDiscountPolicy();
+    
+    @Test
+    @DisplayName("VIP는 10% 할인이 적용되어야 한다.")
+    void vip_o() {
+        // given
+        Member member = new Member(1L, "memberVIP", Grade.VIP);
+        
+        // when
+        int discount = discountPolicy.discount(member, 10000);
+        
+        // then
+        assertThat(discount).isEqualTo(1000);
+    }
+    
+    @Test
+    @DisplayName
+    void vip_x() {
+        // given
+        Member member = new Member(2L, "memberBASIC", Grade.BASIC);
+        
+        // when
+        int discount = discountPolicy.discount(member, 10000);
+        
+        // then
+        assrtThat(discount).isEqualTo(0);
+    }
+}
+```
